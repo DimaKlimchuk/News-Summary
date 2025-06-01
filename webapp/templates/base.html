@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Новинний Пайплайн{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../static/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="/"
+          ><img
+            class="logo"
+            src="../static/images/ChatGPT Image May 15, 2025, 10_42_18 PM.svg"
+        /></a>
+        <ul class="menu">
+          <li class="menu_item"><a href="/">Головна</a></li>
+          <li class="menu_item"><a href="/news">Головні новини</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <footer>
+      <p>© 2025 | ФІОТ — майбутнє ІТ починається тут</p>
+    </footer>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const availableDates = {{ available_dates | default([]) | tojson }};
+
+
+        flatpickr("#date-picker", {
+            enable: availableDates,
+            dateFormat: "Y-m-d",
+            locale: "uk",
+            onChange: function(selectedDates, dateStr) {
+            if (dateStr) {
+                window.location.href = `/news/${dateStr}`;
+            }
+            }
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,209 @@
+{% extends "base.html" %} {% block title %}Головна{% endblock %} {% block
+content %}
+
+<div class="section">
+  <div class="container">
+    <div
+      class="hero"
+      style="display: flex; align-items: center; justify-content: space-between"
+    >
+      <div style="display: flex; flex-direction: column; width: 45%; gap: 20px">
+        <h1>Розумна аналітика новин — вiд даних до дiй</h1>
+        <p>
+          Цей вебсервiс допомагає автоматично аналiзувати новини з сайтiв та
+          телеграм-каналiв українською мовою. Ми визначаємо теми, настрiй
+          публiкацiй i групуємо подiбнi новини разом. Результатом є зручний
+          щоденний огляд найважливiшого — стисло, зрозумiло i без зайвого.
+        </p>
+      </div>
+      <div style="width: 45%">
+        <img
+          style="width: 100%; max-height: 500px; object-fit: contain"
+          src="../static/images/main_hero_image.png"
+        />
+      </div>
+    </div>
+
+    <div class="main_news_section">
+      <h2>Ознайомтесь з головними подiями дня</h2>
+      <p>
+        Система автоматично аналiзує новини та формує добiрку найактуальнiших.
+        Створiть її зараз або перегляньте ранiше згенеровану версiю.
+      </p>
+
+      <!-- Dropdown для новинних сайтів -->
+      <div>
+        <label><strong>Виберiть джерела новин:</strong></label
+        ><br />
+        <div class="dropdown">
+          <button onclick="toggleDropdown('news-dropdown')">
+            Обрати джерела
+          </button>
+          <div
+            class="dropdown-menu"
+            id="news-dropdown"
+            style="display: none; text-align: left"
+          >
+            <label><input type="checkbox" value="tsn" /> TSN</label><br />
+            <label><input type="checkbox" value="pravda" /> Pravda</label><br />
+            <label><input type="checkbox" value="24tv" /> 24tv</label><br />
+            <label><input type="checkbox" value="bbc" /> BBC</label><br />
+            <label><input type="checkbox" value="unian" /> UNIAN</label>
+          </div>
+        </div>
+        <p style="font-size: 0.9em; color: gray">
+          Виберiть щонайменше 2 джерела
+        </p>
+      </div>
+
+      <!-- Чекбокс Telegram -->
+      <div>
+        <label
+          ><input type="checkbox" id="toggle-telegram" /> Додати
+          Telegram-канали</label
+        >
+      </div>
+
+      <!-- Dropdown Telegram каналів -->
+      <div id="telegram-select-wrapper" style="display: none">
+        <label><strong>Виберiть Telegram-канали:</strong></label
+        ><br />
+        <div class="dropdown">
+          <button onclick="toggleDropdown('telegram-dropdown')">
+            Обрати канали
+          </button>
+          <div
+            class="dropdown-menu"
+            id="telegram-dropdown"
+            style="display: none; text-align: left"
+          >
+            <label
+              ><input type="checkbox" value="UkraineNow" /> UkraineNow</label
+            ><br />
+            <label><input type="checkbox" value="lachentyt" /> Lachentyt</label
+            ><br />
+            <label><input type="checkbox" value="ssternenko" /> Sternenko</label
+            ><br />
+            <label
+              ><input type="checkbox" value="business_ua" /> Business UA</label
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Кнопки -->
+      <div>
+        <div class="news_buttons_container">
+          {% if has_news %}
+          <button id="start-btn">Оновити головне</button>
+          <a href="/news"><button>Головне за сьогоднi</button></a>
+          {% else %}
+          <button id="start-btn">Запустити обробку новин</button>
+          {% endif %}
+        </div>
+
+        <div id="progress-container" style="display: none">
+          <div id="progressbar"><div></div></div>
+          <div id="status">Чекаємо...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Календар -->
+    <div class="calendar_section">
+      <h2>Головне за попереднi днi — легко</h2>
+      <p>
+        Не встигли стежити за подiями? Оберiть будь-яку дату з календаря — i
+        система покаже вам добiрку найважливiших новин за обраний день.
+      </p>
+      <input type="text" id="date-picker" placeholder="Оберiть дату" readonly />
+    </div>
+  </div>
+</div>
+
+{% endblock %} {% block head %}
+<script>
+  function toggleDropdown(id) {
+    const el = document.getElementById(id);
+    el.style.display = el.style.display === "none" ? "block" : "none";
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const startBtn = document.getElementById("start-btn");
+    const progressContainer = document.getElementById("progress-container");
+    const progressBar = document.querySelector("#progressbar > div");
+    const statusText = document.getElementById("status");
+    const toggleTelegram = document.getElementById("toggle-telegram");
+    const telegramWrapper = document.getElementById("telegram-select-wrapper");
+
+    function toggleDropdown(id) {
+      const menu = document.getElementById(id);
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    toggleTelegram.addEventListener("change", (e) => {
+      telegramWrapper.style.display = e.target.checked ? "block" : "none";
+    });
+
+    if (startBtn) {
+      startBtn.addEventListener("click", () => {
+        const selectedSites = Array.from(
+          document.querySelectorAll("#news-dropdown input:checked")
+        ).map((i) => i.value);
+
+        if (selectedSites.length < 2) {
+          alert("Оберiть щонайменше 2 джерела новин.");
+          return;
+        }
+
+        const telegramChecked = toggleTelegram.checked;
+        const selectedTelegram = telegramChecked
+          ? Array.from(
+              document.querySelectorAll("#telegram-dropdown input:checked")
+            ).map((i) => i.value)
+          : [];
+
+        startBtn.disabled = true;
+        progressContainer.style.display = "block";
+        progressBar.style.width = "0%";
+        statusText.textContent = "Запуск...";
+
+        const eventSource = new EventSource("/progress");
+
+        eventSource.onmessage = function (event) {
+          const data = JSON.parse(event.data);
+          progressBar.style.width = data.progress + "%";
+          statusText.textContent = data.message;
+
+          if (data.progress >= 100) {
+            statusText.textContent = "Обробка завершена!";
+            eventSource.close();
+            setTimeout(() => {
+              window.location.href = "/news";
+            }, 1000);
+          }
+        };
+
+        eventSource.onerror = function () {
+          statusText.textContent = "Помилка отримання даних з сервера.";
+          eventSource.close();
+          startBtn.disabled = false;
+        };
+
+        fetch("/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sources: selectedSites,
+            telegram_channels: selectedTelegram,
+          }),
+        }).catch(() => {
+          statusText.textContent = "Не вдалося запустити обробку.";
+          startBtn.disabled = false;
+          eventSource.close();
+        });
+      });
+    }
+  });
+</script>
+{% endblock %}

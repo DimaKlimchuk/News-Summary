@@ -1,0 +1,51 @@
+{% extends "base.html" %} {% block title %}Головні новини{% endblock %} {% block
+content %}
+<div class="section">
+  <div class="container">
+    <div
+      style="display: flex; align-items: center; justify-content: space-between"
+    >
+      <h1>
+        {% if selected_date %}Новини за {{ selected_date }}{% else %}Головні
+        новини{% endif %}
+      </h1>
+
+      <input type="text" id="date-picker" placeholder="Оберіть дату" readonly />
+    </div>
+    <ul class="news_container">
+      {% for item in news %}
+      <li class="news_item {{ item.Sentiment }}">
+        <a href="{{ url_for('single_news', news_id=item.id) }}"
+          ><strong>{{ item.Title }}</strong></a
+        >
+        <div class="news_info">
+          <span class="data">{{ item.Date }}</span
+          ><span class="category">{{item.Category}}</span>
+        </div>
+        <p>{{ item.Summary or item.Text[:200] }}..</p>
+        <div class="news_buttons_con">
+          <a
+            href="{{ url_for('single_news', news_id=item.id) }}"
+            class="learn_more"
+            >Детальніше</a
+          >
+
+          {% if item.Link %}
+          <a target="_blank" href="{{ item.Link }}" class="learn_more"
+            >Читати повністю</a
+          >
+          {% endif %}
+        </div>
+      </li>
+      {% else %}
+      <li>Новин немає</li>
+      {% endfor %}
+    </ul>
+    <a
+      href="{{ url_for('download_report', report_date=selected_date or current_date) }}"
+    >
+      <button class="download-btn">Отримати аналітичний звіт</button>
+    </a>
+  </div>
+</div>
+{% endblock %}

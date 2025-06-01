@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Аналітичний звіт</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 40px;
+        color: #000;
+      }
+      h1 {
+        text-align: center;
+      }
+      h3 {
+        margin-bottom: 5px;
+      }
+      .news-block {
+        margin-bottom: 25px;
+        page-break-inside: avoid;
+      }
+      .meta {
+        font-size: 0.9em;
+        color: #444;
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Аналітичний звіт по новинах</h1>
+    <h2>Новини за {{ date }}</h2>
+
+    {% for item in news %}
+    <div class="news-block">
+      <h3>{{ item.Title }}</h3>
+      <div class="meta">
+        <strong>Джерело:</strong> {{ item.Source }} | <strong>Дата:</strong> {{
+        item.Date }} | <strong>Категорія:</strong> {{ item.Category }}
+      </div>
+      <p>{{ item.Summary }}</p>
+    </div>
+    {% endfor %}
+  </body>
+</html>

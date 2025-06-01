@@ -1,0 +1,32 @@
+{% extends "base.html" %} {% block title %}{{ news.Title }}{% endblock %} {%
+block content %}
+<div class="section">
+  <div class="container">
+    <article style="display: flex; flex-direction: column; gap: 20px">
+      <h2>{{ news.Title }}</h2>
+      <p><strong>Дата:</strong> {{ news.Date }}</p>
+      <p><strong>Джерело:</strong> {{ news.Source }}</p>
+      <p><strong>Категорія:</strong> {{ news.Category }}</p>
+      <p><strong>Тема:</strong> {{ news.Theme }}</p>
+      <p><strong>Кластер:</strong> {{ news.Cluster }}</p>
+      <p><strong>Тональність:</strong> {{ news.Sentiment }}</p>
+      <p><strong>Верифікація:</strong> {{ news.Verificated }}</p>
+      <p><strong>Джерела верифікації:</strong> {{ news.Sources }}</p>
+      {% if news.Link %}
+      <a target="_blank" href="{{ news.Link }}" class="learn_more"
+        >Читати повністю</a
+      >
+      {% endif %}
+
+      <hr />
+      <h3>Резюме</h3>
+      <p>{{ news.Summary }}</p>
+      <hr />
+      <h3>Повний текст</h3>
+      <p>{{ news.Text }}</p>
+
+      <a href="{{ url_for('show_news') }}">← Назад до списку</a>
+    </article>
+  </div>
+</div>
+{% endblock %}
