@@ -58,7 +58,7 @@ Web + Telegram → Scraper → NLP → Clustering → Sentiment → LLM → Data
 
 ### PDF Report
 
-![PDF](assets/web-app-12.png)
+![PDF](assets/web-app-13.png)
 
 ### Single News
 
